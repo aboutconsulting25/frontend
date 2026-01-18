@@ -71,6 +71,7 @@ export const authService = {
         name: '김대표',
         email,
         role: 'consultant',
+        isAuthenticated: true,
       },
       token: 'mock_token_' + Date.now(),
     };

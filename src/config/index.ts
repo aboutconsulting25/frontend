@@ -14,7 +14,7 @@ export const config = {
     baseUrl: '/api/v1',
     
     // 실제 서버 URL (프록시 대상)
-    serverUrl: process.env.NEXT_PUBLIC_API_URL || 'http://13.53.39.217',
+    serverUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:6000',
     
     // Mock 지연 시간 (ms)
     mockDelay: 800,

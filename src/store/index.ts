@@ -6,13 +6,17 @@ import type { User } from '@/types';
 // Auth Store
 // ============================================
 
+export type UserRole = 'admin' | 'consultant' | 'user';
+
 interface AuthState {
   user: User | null;
   token: string | null;
+  userRole: UserRole | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
+  setUserRole: (role: UserRole | null) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
 }
@@ -22,11 +26,13 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       token: null,
+      userRole: null,
       isAuthenticated: false,
       isLoading: true,
       setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
       setToken: (token) => set({ token }),
-      logout: () => set({ user: null, token: null, isAuthenticated: false }),
+      setUserRole: (role) => set({ userRole: role }),
+      logout: () => set({ user: null, token: null, userRole: null, isAuthenticated: false }),
       setLoading: (isLoading) => set({ isLoading }),
     }),
     {

@@ -25,7 +25,7 @@ export default function Header() {
     <header className="h-[60px] bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
       <div className="h-full max-w-[1280px] mx-auto px-8 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/consultant" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image
             src="/images/logo-black.png"
             alt="About Consulting"

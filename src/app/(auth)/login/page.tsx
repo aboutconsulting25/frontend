@@ -23,7 +23,7 @@ export default function LoginPage() {
       const response = await authService.login(email, password);
       setToken(response.token);
       setUser(response.user);
-      router.push('/consultant');
+      router.push('/');
     } catch (err) {
       setError('로그인에 실패했습니다. 다시 시도해주세요.');
     } finally {
