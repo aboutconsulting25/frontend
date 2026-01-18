@@ -43,7 +43,7 @@ export default function HomePage() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-neutral-50 flex justify-center">
+      <div className="min-h-screen bg-neutral-50 flex justify-center overflow-y-auto" style={{ scrollBehavior: 'auto' }}>
         <div className="max-w-[1200px] w-full px-6 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">대치입시학원</h1>

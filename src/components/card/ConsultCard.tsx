@@ -27,7 +27,7 @@ export default function ConsultCard({
   return (
     <div
       onClick={onClick}
-      className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200"
+      className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 will-change-transform"
     >
       <div className="flex items-start gap-4 mb-6">
         <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
@@ -37,6 +37,8 @@ export default function ConsultCard({
             width={64}
             height={64}
             className="w-full h-full object-cover"
+            loading="lazy"
+            quality={75}
           />
         </div>
         <div className="flex-1 flex flex-col justify-between h-16">
