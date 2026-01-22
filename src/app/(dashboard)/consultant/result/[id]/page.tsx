@@ -1,64 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { 
-  analysisService, 
-  MOCK_SAENGGIBU_ANALYSIS, 
-  MOCK_GRADE_ANALYSIS, 
-  MOCK_COMPREHENSIVE_ANALYSIS,
-} from '@/services/api';
-import type { 생기부분석, 성적분석, 종합분석 } from '@/types';
+import { ChevronLeft, ExternalLink, Share } from 'lucide-react';
 
 type TabType = 'original' | 'analysis' | 'grades' | 'comprehensive';
 
 export default function ResultPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const reportRef = useRef<HTMLDivElement>(null);
-  
-  const documentId = params.id as string;
-  const studentId = searchParams.get('student_id') || 'mock';
-  const reportId = searchParams.get('report_id') || 'mock';
-  
-  const [activeTab, setActiveTab] = useState<TabType>('grades');
-  const [isLoading, setIsLoading] = useState(true);
-  const [saenggibu, setSaenggibu] = useState<생기부분석 | null>(null);
-  const [grades, setGrades] = useState<성적분석 | null>(null);
-  const [comprehensive, setComprehensive] = useState<종합분석 | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await analysisService.getFullAnalysis(studentId, documentId, reportId);
-        setSaenggibu(result.생기부_분석);
-        setGrades(result.성적분석);
-        setComprehensive(result.종합분석);
-      } catch {
-        setSaenggibu(MOCK_SAENGGIBU_ANALYSIS);
-        setGrades(MOCK_GRADE_ANALYSIS);
-        setComprehensive(MOCK_COMPREHENSIVE_ANALYSIS);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [documentId, studentId, reportId]);
-
-  const handleExportPDF = async () => {
-    if (!reportRef.current) return;
-    const html2canvas = (await import('html2canvas')).default;
-    const jsPDF = (await import('jspdf')).default;
-    const canvas = await html2canvas(reportRef.current, { scale: 2 });
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save(`분석리포트.pdf`);
-  };
+  const [activeTab, setActiveTab] = useState<TabType>('analysis');
 
   const tabs = [
     { id: 'original' as TabType, label: '생기부 원본' },
@@ -67,53 +20,40 @@ export default function ResultPage() {
     { id: 'comprehensive' as TabType, label: '종합 분석' },
   ];
 
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center py-32">
-          <div className="w-10 h-10 border-3 border-[#1B7F9E] border-t-transparent rounded-full animate-spin" />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
     <DashboardLayout>
-      <div className="max-w-[1100px] mx-auto">
+      <div className="max-w-[1000px] mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start gap-1">
+            <button onClick={() => router.back()} className="pt-0.5 text-gray-400 hover:text-gray-600">
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-[22px] font-semibold text-gray-900">김학생</h1>
-              <p className="text-[13px] text-gray-500">한국고등학교 · 컴퓨터소프트웨어</p>
+              <h1 className="text-2xl font-bold text-gray-900">김학생</h1>
+              <p className="text-sm text-gray-500">현대고등학교 | 컴퓨터소프트웨어 진로희망</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsEditMode(!isEditMode)}
-              className={`px-4 py-2 text-[13px] rounded-lg transition ${isEditMode ? 'bg-[#1B7F9E] text-white' : 'border border-gray-300 text-gray-600 hover:bg-gray-50'}`}
-            >
-              {isEditMode ? '수정 완료' : '수정'}
+            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ExternalLink className="w-5 h-5 text-gray-500" />
             </button>
-            <button onClick={handleExportPDF} className="px-4 py-2 text-[13px] border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50">
-              PDF 다운로드
+            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <Share className="w-5 h-5 text-gray-500" />
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-8">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2 text-[13px] font-medium rounded-full transition-all ${
-                activeTab === tab.id ? 'bg-[#1B7F9E] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              className={`px-5 py-2.5 text-sm font-medium rounded-full transition-all ${
+                activeTab === tab.id
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {tab.label}
@@ -122,261 +62,192 @@ export default function ResultPage() {
         </div>
 
         {/* Content */}
-        <div ref={reportRef} className="bg-white border border-gray-200 rounded-lg p-6">
-          {activeTab === 'original' && (
-            <div className="py-20 text-center text-gray-500">생기부 원본 PDF</div>
-          )}
-          
-          {activeTab === 'analysis' && saenggibu && (
-            <SaenggibuTab data={saenggibu} isEditMode={isEditMode} />
-          )}
-          
-          {activeTab === 'grades' && grades && (
-            <GradesTab data={grades} isEditMode={isEditMode} />
-          )}
-          
-          {activeTab === 'comprehensive' && comprehensive && (
-            <ComprehensiveTab data={comprehensive} isEditMode={isEditMode} />
-          )}
-        </div>
+        {activeTab === 'original' && (
+          <div className="bg-white border border-gray-200 rounded-lg p-20 text-center text-gray-500">
+            생기부 원본 PDF가 표시됩니다.
+          </div>
+        )}
+
+        {activeTab === 'analysis' && <SaenggibuAnalysisTab />}
+
+        {activeTab === 'grades' && (
+          <div className="bg-white border border-gray-200 rounded-lg p-20 text-center text-gray-500">
+            성적 분석이 표시됩니다.
+          </div>
+        )}
+
+        {activeTab === 'comprehensive' && (
+          <div className="bg-white border border-gray-200 rounded-lg p-20 text-center text-gray-500">
+            종합 분석이 표시됩니다.
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
 }
 
-// ============================================
-// 생기부 분석 탭
-// ============================================
-function SaenggibuTab({ data, isEditMode }: { data: 생기부분석; isEditMode: boolean }) {
+// 생기부 분석 탭 컴포넌트
+function SaenggibuAnalysisTab() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-[15px] font-semibold text-gray-900 mb-2">진단 개요</h3>
-        <p className="text-[14px] font-medium text-[#1B7F9E] mb-2">{data.생기부_진단개요["한줄 요약"]}</p>
-        <p className="text-[13px] text-gray-600">{data.생기부_진단개요.본문}</p>
-      </div>
-
+    <div className="space-y-8">
+      {/* 강점/약점 요약 카드 */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-5">
-          <h4 className="text-[14px] font-semibold text-green-700 mb-3">강점</h4>
-          {Object.entries(data.강점요약).map(([key, val], i) => (
-            <div key={key} className="flex gap-2 mb-2">
-              <span className="w-5 h-5 bg-green-500 text-white text-[11px] rounded-full flex items-center justify-center flex-shrink-0">{i+1}</span>
-              <p className="text-[12px] text-green-700">{val}</p>
-            </div>
-          ))}
+        {/* 강점 요약 */}
+        <div className="bg-[#F6F8FA] border border-[#BCD0DC] rounded-xl p-6">
+          <h3 className="text-xl font-medium text-gray-900 mb-4">강점 요약</h3>
+          <div className="my-4 border-t border-[#E9E9E9]" />
+          <ul className="space-y-2 text-sm text-gray-700">
+            <li>1. 국어 과목 1등급으로 강점 확인하였으며 유지하길 바람.</li>
+            <li>2. 사회 과목 2등급으로 강점 확인했으나 앞으로 1등급으로 상승하길 바람.</li>
+            <li>3. 이과임에도 불구하고 수학 4등급으로 다음학기 3등급대 진입 필수</li>
+          </ul>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-5">
-          <h4 className="text-[14px] font-semibold text-red-700 mb-3">약점</h4>
-          {Object.entries(data.약점요약).map(([key, val], i) => (
-            <div key={key} className="flex gap-2 mb-2">
-              <span className="w-5 h-5 bg-red-500 text-white text-[11px] rounded-full flex items-center justify-center flex-shrink-0">{i+1}</span>
-              <p className="text-[12px] text-red-700">{val}</p>
-            </div>
-          ))}
+
+        {/* 약점 요약 */}
+        <div className="bg-[#FFFFFF] border border-[#BCD0DC] rounded-xl p-6">
+          <h3 className="text-xl font-medium text-gray-900 mb-4">약점 요약</h3>
+          <div className="my-4 border-t border-[#F7F7F7]" />
+          <ul className="space-y-2 text-sm text-gray-700">
+            <li>1. 이과임에도 불구하고 수학 4등급으로 다음학기 3등급대 진입 필수</li>
+            <li>2. 진로관련 심화학습 및 활동 필요</li>
+            <li>3. 이과임에도 불구하고 수학 4등급으로 다음학기 3등급대 진입 필수</li>
+          </ul>
         </div>
       </div>
 
-      <div>
-        <h3 className="text-[15px] font-semibold text-gray-900 mb-3">강화 방안</h3>
-        <div className="bg-[#1B7F9E]/10 rounded-lg p-4">
-          <p className="text-[13px] font-medium text-[#1B7F9E] mb-2">{data.진로적합성_강화방안.강화방안.한줄요약}</p>
-          <p className="text-[12px] text-gray-600">{data.진로적합성_강화방안.강화방안.설명}</p>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-[15px] font-semibold text-gray-900 mb-3">추천 프로젝트</h3>
-        <div className="grid grid-cols-3 gap-3">
-          {data.진로적합성_강화방안.비교과_지도필요_영역.프로젝트_및_심화활동_추천.map((p) => (
-            <div key={p.프로젝트_번호} className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-              <h5 className="text-[12px] font-medium text-amber-700 mb-1">{p.제목}</h5>
-              <p className="text-[11px] text-amber-600">{p.내용}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// 성적 분석 탭
-// ============================================
-function GradesTab({ data, isEditMode }: { data: 성적분석; isEditMode: boolean }) {
-  const g = data.내신;
-  
-  return (
-    <div className="space-y-6">
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="border border-gray-200 rounded-lg p-4">
-          <div className="text-[11px] text-gray-500 mb-1">성적 요약</div>
-          <div className="text-[24px] font-bold text-gray-900">{g.성적요약.최고등급}</div>
-          <div className="text-[11px] text-gray-400">{g.성적요약.반영과목}</div>
-        </div>
-        <div className="border border-gray-200 rounded-lg p-4">
-          <div className="text-[11px] text-gray-500 mb-1">등급 변화</div>
-          <div className="text-[24px] font-bold text-green-500">{g.등급변화값}</div>
-          <div className="text-[11px] text-gray-400">{g.성적요약.성적추이}</div>
-        </div>
-        <div className="border border-gray-200 rounded-lg p-4">
-          <div className="text-[11px] text-gray-500 mb-1">목표</div>
-          <div className="text-[13px] font-medium text-gray-900 mb-1">{g.단기목표}</div>
-          <div className="text-[12px] text-gray-500">{g.장기목표}</div>
-        </div>
-      </div>
-
-      {/* Grade Table */}
-      <div>
-        <h3 className="text-[15px] font-semibold text-gray-900 mb-3">과목별 등급표</h3>
-        <table className="w-full text-[12px] border border-gray-200">
-          <thead>
-            <tr className="bg-[#1B7F9E] text-white">
-              <th className="px-3 py-2 text-left">과목</th>
-              <th className="px-3 py-2 text-center">1-1</th>
-              <th className="px-3 py-2 text-center">1-2</th>
-              <th className="px-3 py-2 text-center">2-1</th>
-              <th className="px-3 py-2 text-center">2-2</th>
-              <th className="px-3 py-2 text-center">3-1</th>
-              <th className="px-3 py-2 text-center text-amber-300">평균</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(g.학기별등급표.성적표).map(([subj, scores]) => (
-              <tr key={subj} className="border-b border-gray-100">
-                <td className="px-3 py-2 font-medium">{subj}</td>
-                <td className="px-3 py-2 text-center">{scores['1-1'] || '-'}</td>
-                <td className="px-3 py-2 text-center">{scores['1-2'] || '-'}</td>
-                <td className="px-3 py-2 text-center">{scores['2-1'] || '-'}</td>
-                <td className="px-3 py-2 text-center">{scores['2-2'] || '-'}</td>
-                <td className="px-3 py-2 text-center">{scores['3-1'] || '-'}</td>
-                <td className="px-3 py-2 text-center font-medium text-amber-600">{scores['과목평균'] || '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Strengths/Weaknesses */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-green-700 mb-2">성적 강점</h4>
-          {Object.values(g.학기별등급표.성적강점).map((s, i) => (
-            <p key={i} className="text-[12px] text-green-600 mb-1">• {s}</p>
-          ))}
-        </div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-red-700 mb-2">성적 약점</h4>
-          {Object.values(g.학기별등급표.성적약점).map((s, i) => (
-            <p key={i} className="text-[12px] text-red-600 mb-1">• {s}</p>
-          ))}
-        </div>
-      </div>
-
-      {/* Improvement */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h3 className="text-[14px] font-semibold text-gray-900 mb-2">성적 보완 방안</h3>
-        <p className="text-[13px] font-medium text-[#1B7F9E] mb-2">{g.학기별등급표.성적보완방안.한줄요약설명}</p>
-        <p className="text-[12px] text-gray-600">{g.학기별등급표.성적보완방안.본문설명}</p>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// 종합 분석 탭
-// ============================================
-function ComprehensiveTab({ data, isEditMode }: { data: 종합분석; isEditMode: boolean }) {
-  return (
-    <div className="space-y-6">
-      {/* Score */}
-      <div className="flex gap-6">
-        <div className="w-24 h-24 rounded-full bg-[#1B7F9E] flex items-center justify-center flex-shrink-0">
-          <div className="text-center text-white">
-            <div className="text-[28px] font-bold">{data.종합점수.값.replace('점', '')}</div>
-            <div className="text-[10px]">종합점수</div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <h3 className="text-[14px] font-semibold text-gray-900 mb-2">종합 의견</h3>
-          <p className="text-[13px] text-gray-600">{data.종합의견.값}</p>
-        </div>
-      </div>
-
-      {/* 수시카드 */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="px-4 py-2 bg-[#1B7F9E] text-white text-[13px] font-medium">경로 A</div>
-          <div className="divide-y divide-gray-100">
-            {Object.values(data.수시카드.경로A).map((item, i) => (
-              <div key={i} className="px-4 py-2 flex justify-between items-center">
-                <div>
-                  <span className="text-[12px] font-medium text-gray-900">{item.학교이름}</span>
-                  <span className="text-[11px] text-gray-500 ml-2">{item.과이름}</span>
-                </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded ${
-                  item.종합판단.includes('상향') ? 'bg-red-100 text-red-600' :
-                  item.종합판단.includes('적정') ? 'bg-green-100 text-green-600' :
-                  'bg-blue-100 text-blue-600'
-                }`}>
-                  {item.종합판단.split(' ')[0]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="px-4 py-2 bg-amber-500 text-white text-[13px] font-medium">경로 B</div>
-          <div className="divide-y divide-gray-100">
-            {Object.values(data.수시카드.경로B).map((item, i) => (
-              <div key={i} className="px-4 py-2 flex justify-between items-center">
-                <div>
-                  <span className="text-[12px] font-medium text-gray-900">{item.학교이름}</span>
-                  <span className="text-[11px] text-gray-500 ml-2">{item.과이름}</span>
-                </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded ${
-                  item.종합판단.includes('상향') ? 'bg-red-100 text-red-600' :
-                  item.종합판단.includes('적정') ? 'bg-green-100 text-green-600' :
-                  'bg-blue-100 text-blue-600'
-                }`}>
-                  {item.종합판단.split(' ')[0]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 긍정/개선 */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-green-700 mb-2">긍정적 요소</h4>
-          {Object.values(data.긍정적요소).map((s, i) => (
-            <p key={i} className="text-[12px] text-green-600 mb-1">• {s}</p>
-          ))}
-        </div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-red-700 mb-2">개선 필요</h4>
-          {Object.values(data.개선필요사항).map((s, i) => (
-            <p key={i} className="text-[12px] text-red-600 mb-1">• {s}</p>
-          ))}
-        </div>
-      </div>
-
-      {/* Advice */}
+      {/* 생활기록부 진단 개요 */}
       <div className="space-y-4">
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-gray-900 mb-2">학부모님께</h4>
-          <p className="text-[12px] text-gray-600">{data.학부모님께드리는조언}</p>
+        <h2 className="text-xl font-medium text-[#242424]">생활기록부 진단 개요</h2>
+
+        <div className="bg-[#FFFFFF] border border-[#00000026] rounded-xl p-5">
+          <div className="flex items-start gap-2">
+            <span className="text-primary-500">✓</span>
+            <p className="text-sm font-medium text-gray-900">
+              수학과목의 성취도 향상과 정보 및 코딩 기반의 세특 보완을 통해 학생부종합전형 지원 전략을 추천합니다.
+            </p>
+          </div>
+          <div className="my-4 border-t border-[#F7F7F7]" />
+          <div className="text-sm text-gray-600 leading-relaxed space-y-4">
+            <p>
+              컴퓨터소프트웨어 계열은 수학적 논리력, 프로그래밍 경험, 문제해결 능력을 핵심 역량으로 요구하는 학문 분야입니다.
+            </p>
+            <p>
+              현재 정성현 학생은 정보 과목에서 A등급을 받으며 기초적인 알고리즘 이해도와 컴퓨터 활용 능력을 이미 입증하고 있고, 국어와 통합사회 과목에서도 자료를 해석하고 논리를 구성하는 능력, 복잡한 정보를 읽고 이해하는 독해력에서도 강점을 보이고 있습니다. 이는 소프트웨어 개발 과정에서 요구되는 역량으로 긍정적인 요소입니다. 그러나 수학 성적이 4등급으로 다소 낮다는 점은 해당 계열 지원 시 가장 큰 리스크로 작용할 수 있습니다. 컴퓨터소프트웨어 전공은 수학적 사고력이 필수적이기 때문에, 향후 1년간 수학 성적 향상에 집중하는 전략이 매우 중요합니다. 이와 더불어, 컴퓨터 관련 프로젝트 경험, 프로그래밍 활동, 전공 관련 독서를 체계적으로 넓어나간다면 학생부종합전형 지원 전략에서 경쟁력을 확보할 수 있을 것으로 기대됩니다.
+            </p>
         </div>
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-gray-900 mb-2">학생에게</h4>
-          <p className="text-[12px] text-gray-600">{data.학생에게드리는응원의메세지}</p>
         </div>
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h4 className="text-[13px] font-semibold text-gray-900 mb-2">방학 계획</h4>
-          <p className="text-[12px] text-gray-600">{data.추천방학계획}</p>
+      </div>
+
+      {/* 진로적합성 강화 방안 */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-medium text-[#242424]">진로적합성 강화 방안</h2>
+
+        <div className="bg-[#FFFFFF] border border-[#00000026] rounded-xl p-5">
+          <div className="flex items-start gap-2">
+            <span className="text-primary-500">✓</span>
+            <p className="text-sm font-medium text-gray-900">
+              수학 역량 강화 방안이 필요합니다.
+            </p>
+          </div>
+          <div className="my-4 border-t border-[#F7F7F7]" />
+          <div>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              2028 수능 체제에서도 컴퓨터공학과는 수학역량을 필수로 요구합니다. 고등학교 2학년 1학기까지 3등급대 도달을 목표로 단계적 학습이 중요합니다. 현재 정성현 학생이 속한 성적대의 성적향상 방안은 아래와 같습니다.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <button className="py-5 px-4 bg-[#F59E0B] text-[#0080C4] font-medium rounded-lg text-sm hover:bg-amber-200 transition-colors">
+            중학교 과정부터 개념 구멍 메우기
+          </button>
+          <button className="py-5 px-4 bg-[#F59E0B] text-[#0080C4] font-medium rounded-lg text-sm hover:bg-amber-200 transition-colors">
+            문제 유형별 반복 학습
+          </button>
+          <button className="py-5 px-4 bg-[#F59E0B] text-[#0080C4] font-medium rounded-lg text-sm hover:bg-amber-200 transition-colors">
+            주 3회 이상 꾸준한 수학 학습시간 확보
+          </button>
+        </div>
+
+        <div className="bg-[#FFFFFF] border border-[#00000026] rounded-xl p-5">
+          <div className="flex items-start gap-2">
+            <span className="text-primary-500">✓</span>
+            <p className="text-sm font-medium text-gray-900">
+              정보, 코딩 실력을 심화시키는 프로젝트를 추천합니다.
+            </p>
+          </div>
+          <div className="my-4 border-t border-[#F7F7F7]" />
+          <div>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              정성현 학생은 정보 과목에서 A등급을 받으며 프로그래밍 기초 소양과 알고리즘 이해도에서 강점을 보이고 있습니다. 이러한 강점을 학생부종합전형에서 더욱 효과적으로 드러내기 위해서는 세부능력 및 특기사항(이하 세특)에 구체적이고 전문적인 성장 과정을 기록하는 것이 매우 중요합니다. 이를 위해 심화 학습 및 심화 활동을 진행하고, 그 과정에서의 탐구 내용·문제 해결 과정·기술적 적용을 세특에 녹여내는 전략이 필요합니다. 특히 최근 대학에서는 단순히 컴퓨터 기술을 사용할 줄 아는 학생을 넘어서, 사회적 문제를 기술적으로 분석 및 해결할 수 있는 융합형 인재를 선호합니다. 따라서 심화활동으로 실제 사회문제를 데이터 기반으로 분석하고, 프로그래밍 및 알고리즘을 활용해 해결 방안을 제시하는 프로젝트를 수행하여 전공적합성은 물론 융합적 사고역량도 함께 강조할 수 있습니다.
+            </p>
+          </div>
+          <div>
+            <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+              이러한 관점에서 정성현 학생의 강점과 진로 방향에 모두 부합하는 심화 프로젝트 활동을 다음과 같이 추천합니다.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="bg-[#FCFCFC] border border-[#E9E9E9] rounded-xl p-5">
+              <h4 className="text-sm font-bold text-primary-500 mb-3">학교 급식 만족도 조사 데이터 분석</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                반 또는 학년 대상 급식 만족도 설문조사를 진행하고 해당 데이터를 Python의 Pandas 라이브러리를 이용하여 분석하고 시각화합니다. 평균, 최댓값, 그래프를 만들어보고 의미있는 인사이트를 도출해 내며 데이터 사이언스의 기초를 경험합니다.
+              </p>
+            </div>
+            <div className="bg-[#FCFCFC] border border-[#E9E9E9] rounded-xl p-5">
+              <h4 className="text-sm font-bold text-primary-500 mb-3">학교폭력 감지 대시보드 텍스트 데이터 분석</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                반 또는 학년 대상 급식 만족도 설문조사를 진행하고 해당 데이터를 Python의 Pandas 라이브러리를 이용하여 분석하고 시각화합니다. 평균, 최댓값, 그래프를 만들어보고 의미있는 인사이트를 도출해 내며 데이터 사이언스의 기초를 경험합니다.
+              </p>
+            </div>
+            <div className="bg-[#FCFCFC] border border-[#E9E9E9] rounded-xl p-5">
+              <h4 className="text-sm font-bold text-primary-500 mb-3">교내 에너지 낭비 감지 시스템 취리 모델 기반 예측</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                반 또는 학년 대상 급식 만족도 설문조사를 진행하고 해당 데이터를 Python의 Pandas 라이브러리를 이용하여 분석하고 시각화합니다. 평균, 최댓값, 그래프를 만들어보고 의미있는 인사이트를 도출해 내며 데이터 사이언스의 기초를 경험합니다.
+              </p>
+            </div>
+        </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-medium text-gray-900">진로 관련 도서 추천</h2>
+
+        <div className="bg-[#FFFFFF] border border-[#00000026] rounded-xl p-5">
+          <div className="flex items-start gap-2">
+            <span className="text-primary-500">✓</span>
+            <p className="text-sm font-medium text-gray-900">
+              컴퓨터소프트웨어학과 도서를 추천합니다.
+            </p>
+          </div>
+          <div className="my-4 border-t border-[#F7F7F7]" />
+          {/* 도서 추천 */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-[#FCFCFC] border border-[#E9E9E9] rounded-xl p-5">
+              <p className="text-sm font-medium text-primary-500 hover:text-primary-600">
+                '코드: 하드웨어와 소프트웨어의 언어'(찰스 펫졸드)
+              </p>
+              <p className="mt-5 text-xs text-gray-600 leading-relaxed">
+                해당 도서는 컴퓨터가 어떻게 0과 1이라는 단순한 신호로 정보를 처리하는지, 근본적으로 어떻게 전기 신호만으로 복잡한 작업을 할 수 있는지 등 전공 기초와 관련해 탐구할 수 있는 내용이 실려 있습니다. 또한 전공 이해도와 전공에 대한 흥미를 나타내는 데 좋은 책입니다.
+              </p>
+            </div>
+            <div className="bg-[#FCFCFC] border border-[#E9E9E9] rounded-xl p-5">
+              <p className="text-sm font-medium text-primary-500 hover:text-primary-600">
+                '메타버스'(김상균)
+              </p>
+              <p className="mt-5 text-xs text-gray-600 leading-relaxed">
+                기술의 발전이 사람에게 어떤 영향을 미치는지를 고민해 볼 수 있는 책입니다.
+              </p>
+            </div>
+            <div className="bg-[#FCFCFC] border border-[#E9E9E9] rounded-xl p-5">
+              <p className="text-sm font-medium text-primary-500 hover:text-primary-600">
+                '슈퍼 인텔리전스'(닉 보스트롬)
+              </p>
+              <p className="mt-5 text-xs text-gray-600 leading-relaxed">
+                미래 사회에 필요한 역량과 태도를 나타내는 데 도움이 되는 책입니다.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
