@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import InfoBox from '@/components/common/InfoBox';
 import { mockStudents } from '@/data/mockData';
 import type { Student } from '@/types';
 
@@ -46,7 +47,6 @@ export default function ConsultantDashboard() {
           <p className="text-[15px] text-gray-500">컨설턴트의 담당 학생을 관리합니다.</p>
         </div>
 
-        {/* Empty State or Student List */}
         {showEmptyState ? (
           <div className="py-16">
             {/* Empty State */}
@@ -65,33 +65,14 @@ export default function ConsultantDashboard() {
               </Link>
             </div>
 
-            {/* Info Box */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-[800px] mx-auto">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-[14px] font-semibold text-gray-900 mb-3">학생 배정 안내</h3>
-                  <ul className="space-y-1.5 text-[13px] text-gray-600">
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-400">•</span>
-                      학생 배정은 학원 관리자가 진행합니다.
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-400">•</span>
-                      학생이 배정되면 알림을 받으실 수 있습니다.
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-400">•</span>
-                      문의사항은 관리자에게 문의하세요.
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            <InfoBox
+              title="학생 배정 안내"
+              items={[
+                '학생 배정은 학원 관리자가 진행합니다.',
+                '학생이 배정되면 알림을 받으실 수 있습니다.',
+                '문의사항은 관리자에게 문의하세요.',
+              ]}
+            />
 
             {/* Demo: Show student list button */}
             <div className="text-center mt-8">
@@ -108,7 +89,7 @@ export default function ConsultantDashboard() {
           </div>
         ) : (
           <div>
-            {/* Student List */}
+
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead>
