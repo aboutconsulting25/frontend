@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import InfoBox from '@/components/common/InfoBox';
+import { useAuthStore } from '@/store';
 import { mockStudents } from '@/data/mockData';
 import type { Student } from '@/types';
 
 export default function ConsultantDashboard() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showEmptyState, setShowEmptyState] = useState(true);
@@ -24,7 +26,8 @@ export default function ConsultantDashboard() {
 
   const handleRowClick = (student: Student) => {
     if (student.status === 'completed' || student.status === 'reviewed') {
-      router.push(`/consultant/result/${student.id}`);
+      const consultantId = user?.id || 'unknown';
+      router.push(`/consultant/${consultantId}/student/${student.id}`);
     }
   };
 

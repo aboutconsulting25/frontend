@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import AnalysisSummaryCard from '@/components/card/AnalysisSummaryCard';
 import DiagnosisCard from '@/components/card/DiagnosisCard';
@@ -11,9 +10,10 @@ import { ChevronLeft, ExternalLink, Share } from 'lucide-react';
 
 type TabType = 'original' | 'analysis' | 'grades' | 'comprehensive';
 
-export default function ResultPage() {
+export default function StudentResultPage() {
   const params = useParams();
   const router = useRouter();
+  const { consultantId, studentId } = params;
   const [activeTab, setActiveTab] = useState<TabType>('analysis');
 
   const tabs = [
