@@ -7,6 +7,7 @@ interface ConsultCardProps {
   consultantRole: string;
   numAssignedStudent?: number;
   starRatio?: number;
+  isBookmarked?: boolean;
   onClick?: () => void;
   onEdit?: () => void;
   onViewStudents?: () => void;
@@ -19,6 +20,7 @@ export default function ConsultCard({
   consultantRole,
   numAssignedStudent = 0,
   starRatio = 0,
+  isBookmarked = false,
   onClick,
   onEdit,
   onViewStudents,
@@ -89,9 +91,13 @@ export default function ConsultCard({
             e.stopPropagation();
             onBookmark?.();
           }}
-          className="ml-4 text-gray-500 hover:text-yellow-500 transition-colors"
+          className="ml-4 transition-colors"
         >
-          <Bookmark size={24} color="#BCD0DC" />
+          <Bookmark
+            size={24}
+            fill={isBookmarked ? '#F59E0B' : 'none'}
+            color={isBookmarked ? '#F59E0B' : '#BCD0DC'}
+          />
         </button>
       </div>
     </div>
