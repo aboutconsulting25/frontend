@@ -44,7 +44,7 @@ const gradeTabs = ['고1', '고2', '고3'];
 
 export default function ConsultantDetailPage() {
   const params = useParams();
-  const consultantId = params.id as string;
+  const consultantId = params.consultantId as string;
   const consultant = consultantsData[consultantId] || { name: '컨설턴트', role: '컨설턴트' };
 
   const [activeTab, setActiveTab] = useState('general');
@@ -229,7 +229,7 @@ export default function ConsultantDetailPage() {
                     <td className="px-6 py-4 text-center text-gray-600">{student.region}</td>
                     <td className="px-6 py-4 text-center">
                       <Link
-                        href={`/consultant/result/student-${student.id}`}
+                        href={`/consultant/${consultantId}/student/${student.id}`}
                         className="text-primary-500 hover:text-primary-600 font-medium text-sm"
                       >
                         관리하기
