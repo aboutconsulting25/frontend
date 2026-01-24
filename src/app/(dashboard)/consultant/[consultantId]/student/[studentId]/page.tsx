@@ -6,6 +6,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import AnalysisSummaryCard from '@/components/card/AnalysisSummaryCard';
 import DiagnosisCard from '@/components/card/DiagnosisCard';
 import RecommendCard from '@/components/card/RecommendCard';
+import GradeAnalysisTab from '@/components/grade/GradeAnalysisTab';
+import ComprehensiveAnalysisTab from '@/components/comprehensive/ComprehensiveAnalysisTab';
 import { ChevronLeft, ExternalLink, Share } from 'lucide-react';
 
 type TabType = 'original' | 'analysis' | 'grades' | 'comprehensive';
@@ -73,17 +75,9 @@ export default function StudentResultPage() {
 
         {activeTab === 'analysis' && <SaenggibuAnalysisTab />}
 
-        {activeTab === 'grades' && (
-          <div className="bg-white border border-gray-200 rounded-lg p-20 text-center text-gray-500">
-            성적 분석이 표시됩니다.
-          </div>
-        )}
+        {activeTab === 'grades' && <GradeAnalysisTab />}
 
-        {activeTab === 'comprehensive' && (
-          <div className="bg-white border border-gray-200 rounded-lg p-20 text-center text-gray-500">
-            종합 분석이 표시됩니다.
-          </div>
-        )}
+        {activeTab === 'comprehensive' && <ComprehensiveAnalysisTab />}
       </div>
     </DashboardLayout>
   );
