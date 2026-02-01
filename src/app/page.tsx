@@ -783,6 +783,10 @@ export default function HomePage() {
                 도입 상담
               </Link>
             </div>
+
+            {/* Stand */}
+            <div className="relative mx-auto w-32 h-8 bg-gray-300 rounded-b-lg" />
+            <div className="relative mx-auto w-48 h-2 bg-gray-400 rounded-b-lg" />
           </div>
         </div>
       </section>
