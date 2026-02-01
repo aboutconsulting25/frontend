@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,6 +15,80 @@ const navItems = [
   { label: 'FAQ', href: '#faq' },
   { label: '문의', href: '#contact' },
 ];
+
+const reviews = [
+  { id: 1, name: '김**', role: '학부모', content: '이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.' },
+  { id: 2, name: '김**', role: '학생', content: '이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.' },
+  { id: 3, name: '김**', role: '컨설턴트', content: '이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.' },
+  { id: 4, name: '김**', role: '학원 원장', content: '이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.' },
+];
+
+function ReviewsSection() {
+  const [selectedReview, setSelectedReview] = useState<number | null>(null);
+
+  return (
+    <>
+      <section id="reviews" className="py-20 bg-[#F6F8FA]">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            실제 사용자들의 생생한 후기로 증명합니다
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                onClick={() => setSelectedReview(review.id)}
+                className="bg-[#FFFFFF80] rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:bg-white active:scale-95"
+              >
+                <h3 className="font-bold text-gray-900 mb-4">{review.name} ({review.role})</h3>
+                <p className="text-gray-600 text-sm leading-relaxed line-clamp-4">
+                  {review.content}
+                </p>
+                <span className="text-primary-500 text-sm mt-3 inline-block">자세히 보기 →</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Modal */}
+      {selectedReview && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedReview(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl animate-[fadeIn_0.2s_ease-out]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(() => {
+              const review = reviews.find(r => r.id === selectedReview);
+              if (!review) return null;
+              return (
+                <>
+                  <div className="flex justify-between items-start mb-6">
+                    <h3 className="font-bold text-xl text-gray-900">{review.name} ({review.role})</h3>
+                    <button
+                      onClick={() => setSelectedReview(null)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed">
+                    {review.content}
+                  </p>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function HomePage() {
   const router = useRouter();
@@ -156,13 +230,13 @@ export default function HomePage() {
       <section className="py-24 bg-[#F6F8FA]">
         <div className="max-w-[1200px] mx-auto px-6 relative min-h-[500px]">
           {/* Quote 1 - Top Left */}
-          <div className="absolute left-[10%] top-[10%]">
+          <div className="absolute left-[10%] top-[10%] transition-all duration-300 ease-out hover:-translate-y-3 hover:scale-105 cursor-pointer group">
             <div className="flex flex-col items-start">
-              <svg className="w-12 h-12 text-blue-300 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-12 h-12 text-blue-300 mb-3 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-sm">
+              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-sm transition-shadow duration-300 group-hover:shadow-lg">
                 <p className="text-gray-700 font-medium">
                   "자료 정리에 시간을 쓰느라 판단에 따른 코칭에 집중하기 어려워요"
                 </p>
@@ -171,15 +245,15 @@ export default function HomePage() {
           </div>
 
           {/* Quote 2 - Top Right */}
-          <div className="absolute right-[10%] top-[25%]">
+          <div className="absolute right-[10%] top-[25%] transition-all duration-300 ease-out hover:-translate-y-3 hover:scale-105 cursor-pointer group">
             <div className="flex flex-col items-end">
-              <svg className="w-12 h-12 text-blue-300 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-12 h-12 text-blue-300 mb-3 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-xs">
+              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-xs transition-shadow duration-300 group-hover:shadow-lg">
                 <p className="text-gray-700 font-medium">
                   "컨설턴트마다 말이 다 달라요."
                 </p>
@@ -188,13 +262,13 @@ export default function HomePage() {
           </div>
 
           {/* Quote 3 - Bottom Left */}
-          <div className="absolute left-[15%] top-[55%]">
+          <div className="absolute left-[15%] top-[55%] transition-all duration-300 ease-out hover:-translate-y-3 hover:scale-105 cursor-pointer group">
             <div className="flex flex-col items-start">
-              <svg className="w-12 h-12 text-blue-300 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-12 h-12 text-blue-300 mb-3 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-sm">
+              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-sm transition-shadow duration-300 group-hover:shadow-lg">
                 <p className="text-gray-700 font-medium">
                   "자료 정리에 시간을 쓰느라 판단에 따른 코칭에 집중하기 어려워요"
                 </p>
@@ -203,9 +277,9 @@ export default function HomePage() {
           </div>
 
           {/* Quote 4 - Bottom Right */}
-          <div className="absolute right-[10%] top-[70%]">
+          <div className="absolute right-[10%] top-[70%] transition-all duration-300 ease-out hover:-translate-y-3 hover:scale-105 cursor-pointer group">
             <div className="flex flex-col items-end">
-              <svg className="w-12 h-12 text-blue-300 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-12 h-12 text-blue-300 mb-3 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M3 21h18" />
                 <path d="M5 21V7l8-4v18" />
                 <path d="M19 21V11l-6-4" />
@@ -214,7 +288,7 @@ export default function HomePage() {
                 <path d="M9 15v.01" />
                 <path d="M9 18v.01" />
               </svg>
-              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-xs">
+              <div className="bg-white rounded-lg px-6 py-4 shadow-sm max-w-xs transition-shadow duration-300 group-hover:shadow-lg">
                 <p className="text-gray-700 font-medium">
                   "수업도 하고 전략도 설계해야 해요."
                 </p>
@@ -272,43 +346,7 @@ export default function HomePage() {
       </section>
 
       {/* Reviews Section */}
-      <section id="reviews" className="py-20 bg-[#F6F8FA]">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-            실제 사용자들의 생생한 후기로 증명합니다
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Review 1 */}
-            <div className="bg-[#FFFFFF80] rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-              <h3 className="font-bold text-gray-900 mb-4">김** (학부모)</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.
-              </p>
-            </div>
-            {/* Review 2 */}
-            <div className="bg-[#FFFFFF80] rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-              <h3 className="font-bold text-gray-900 mb-4">김** (학생)</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.
-              </p>
-            </div>
-            {/* Review 3 */}
-            <div className="bg-[#FFFFFF80] rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-              <h3 className="font-bold text-gray-900 mb-4">김** (컨설턴트)</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.
-              </p>
-            </div>
-            {/* Review 4 */}
-            <div className="bg-[#FFFFFF80] rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-              <h3 className="font-bold text-gray-900 mb-4">김** (학원 원장)</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                이거 써봤는데 꽤 괜찮아요. 스크립트는 정리할 때나 뒷부분 들다가 앞 내용이 기억 안 날 때 유용해요. 특히, 중간중간 퀴즈로 내용을 점검할 수 있는 기능이 정말 좋아요. 제일 만족스러웠던 건 챗봇인데, 일반 챗봇은 구글에서 정보를 긁어오는 느낌이라면, 빌리브 챗봇은 강의 내용을 기반으로 답변해 주고, 참고해야 할 시간까지 알려줘서 강의 이해에 훨씬 도움이 돼요.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ReviewsSection />
 
       {/* Diagnosis Feature Section */}
       <section id="features" className="py-20 bg-white">
@@ -372,8 +410,17 @@ export default function HomePage() {
           {/* Strength & Weakness Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-6">
             {/* 강점 요약 */}
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div
+              className="bg-[#F6F8FA] border border-[#BCD0DC] rounded-xl p-6 cursor-pointer transition-shadow duration-300 hover:shadow-lg"
+              onClick={(e) => {
+                const target = e.currentTarget;
+                target.classList.remove('animate-shake');
+                void target.offsetWidth;
+                target.classList.add('animate-shake');
+              }}
+            >
               <h3 className="font-bold text-gray-900 mb-4">강점 요약</h3>
+              <div className="border-t border-gray-200 mb-6" />
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>1. 국어 과목 1등급으로 강점 확인하였으며 유지하길 바람.</li>
                 <li>2. 사회 과목 2등급으로 강점 확인하였으나 앞으로 1등급으로 상승하길 바람.</li>
@@ -381,8 +428,17 @@ export default function HomePage() {
               </ul>
             </div>
             {/* 약점 요약 */}
-            <div className="bg-sky-50 rounded-xl p-6">
+            <div
+              className="bg-[#FFFFFF] border border-[#BCD0DC] rounded-xl p-6 cursor-pointer transition-shadow duration-300 hover:shadow-lg"
+              onClick={(e) => {
+                const target = e.currentTarget;
+                target.classList.remove('animate-shake');
+                void target.offsetWidth;
+                target.classList.add('animate-shake');
+              }}
+            >
               <h3 className="font-bold text-gray-900 mb-4">약점 요약</h3>
+              <div className="border-t border-gray-200 mb-6" />
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>1. 이과임에도 불구하고 수학 4등급으로 다음학기 3등급대 진입 필수</li>
                 <li>2. 진로관련 심화학습 및 활동 필요</li>
@@ -397,7 +453,7 @@ export default function HomePage() {
       </section>
 
       {/* 총평 Section */}
-      <section className="py-20 bg-white">
+      <section className="bg-white">
         <div className="max-w-[1200px] mx-auto px-6">
           {/* 총평 Card */}
           <div className="max-w-4xl mx-auto bg-[#F6F8FA] rounded-2xl p-8 shadow-sm border border-[#BCD0DC">
